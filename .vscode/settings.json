@@ -1,7 +1,0 @@
-{
-    "prettier.jsxSingleQuote": true,
-    "prettier.semi": false,
-    "prettier.trailingComma": "none",
-    "prettier.singleQuote": true,
-    "editor.tabSize": 2
-}
