@@ -4,82 +4,141 @@
  * @Autor: wushiyang
  * @Date: 2022-02-08 17:08:18
  * @LastEditors: wushiyang
- * @LastEditTime: 2022-02-08 18:15:27
+ * @LastEditTime: 2022-02-09 17:52:56
 -->
 <template>
   <el-container class="menu-container-container">
-    <el-header>
-      <el-radio-group v-model="isCollapse" style="margin-bottom: 20px">
-        <el-radio-button :label="false">expand</el-radio-button>
-        <el-radio-button :label="true">collapse</el-radio-button>
-      </el-radio-group>
-    </el-header>
+    <el-aside style="background: #000000; width: auto">
+      <div style="height: 56px; cursor: pointer" @click="onClickCollapse">Collapse</div>
+      <Menu :menuList="menuList" :collapse="sideBarModel.isCollapse"></Menu>
+    </el-aside>
     <el-container>
-      <el-aside>
-        <el-menu
-          default-active="2"
-          class="el-menu-vertical-demo"
-          :collapse="isCollapse"
-          @open="handleOpen"
-          @close="handleClose"
-        >
-          <el-sub-menu index="1">
-            <template #title>
-              <el-icon><location /></el-icon>
-              <span>Navigator One</span>
-            </template>
-            <el-menu-item-group>
-              <template #title><span>Group One</span></template>
-              <el-menu-item index="1-1">item one</el-menu-item>
-              <el-menu-item index="1-2">item two</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group title="Group Two">
-              <el-menu-item index="1-3">item three</el-menu-item>
-            </el-menu-item-group>
-            <el-sub-menu index="1-4">
-              <template #title><span>item four</span></template>
-              <el-menu-item index="1-4-1">item one</el-menu-item>
-            </el-sub-menu>
-          </el-sub-menu>
-          <el-menu-item index="2">
-            <el-icon><icon-menu /></el-icon>
-            <template #title>Navigator Two</template>
-          </el-menu-item>
-          <el-menu-item index="3" disabled>
-            <el-icon><document /></el-icon>
-            <template #title>Navigator Three</template>
-          </el-menu-item>
-          <el-menu-item index="4">
-            <el-icon><setting /></el-icon>
-            <template #title>Navigator Four</template>
-          </el-menu-item>
-        </el-menu>
-      </el-aside>
-      <el-main> </el-main>
+      <el-header style="height: 56px; background: #000000">头部</el-header>
+      <el-main>
+        <slot></slot>
+      </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-// import {
-//   Location, Document, Menu as IconMenu, Setting,
-// } from 'element-plus/icons-vue';
+/* eslint-disable-next-line */
+/// <reference
+// path="../../extension/router.d.ts"/>
+import {
+  defineComponent, reactive, h, PropType, VNode, DefineComponent,
+} from 'vue';
+// import { buildSlots } from '@vue/compiler-core';
+import { ElMenu, ElMenuItem, ElSubMenu } from 'element-plus';
+import { RouteRecordRaw } from 'vue-router';
+import { BuildPropReturn, PropWrapper } from '_element-plus@2.0.1@element-plus/es/utils/props';
+import { routes } from '@/router';
+
+type RouteRecordWithChildrenRaw = {
+  children: RouteRecordRaw;
+} & RouteRecordRaw;
+
+const Menu = defineComponent({
+  props: {
+    menuList: {
+      type: Array as PropType<RouteRecordRaw[]>,
+      required: true,
+    },
+    collapse: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  setup(props) {
+    const vnodes: VNode[] = [];
+
+    function createMenuItem(menuItem: RouteRecordRaw): VNode | undefined {
+      if (menuItem.isInMenu && menuItem.name) {
+        if (menuItem.children) {
+          /* eslint-disable-next-line */
+          return createSubMenu(menuItem as RouteRecordWithChildrenRaw);
+        }
+        return h(
+          ElMenuItem,
+          {
+            index: menuItem.name as unknown as BuildPropReturn<
+              PropWrapper<string | null>,
+              null,
+              unknown,
+              unknown,
+              unknown
+            >,
+          },
+          // {
+          //   index: menuItem.name as string | null,
+          //   // backgroundColor: '#000000',
+          //   // router: true,
+          // },
+          // h('div', {
+          //   $slots
+          // }, menuItem.menuTitle)
+          [menuItem.menuIcon, menuItem.menuTitle],
+        );
+      }
+      return undefined;
+    }
+
+    function createSubMenu(menuItem: RouteRecordWithChildrenRaw): VNode {
+      const len = menuItem.children.length;
+      const vns = [];
+      for (let i = 0; i < len; i += 1) {
+        const node = createMenuItem(menuItem.children[i]);
+        if (node) {
+          vns.push(node);
+        }
+      }
+      return h(
+        ElSubMenu,
+        {
+          index: menuItem.name as string,
+        },
+        vns,
+      );
+    }
+
+    props.menuList.forEach((_) => {
+      const node = createMenuItem(_);
+      if (node) {
+        vnodes.push(node);
+      }
+    });
+    return () => h(
+      ElMenu,
+      {
+        collapse: props.collapse,
+      },
+      vnodes,
+    );
+  },
+});
 
 export default defineComponent({
   setup() {
-    const isCollapse = ref(true);
+    const sideBarModel = reactive({
+      active: '/',
+      isCollapse: true,
+    });
     return {
-      isCollapse,
+      sideBarModel,
+      menuList: routes,
     };
   },
-  // components: {
-  //   Location,
-  //   Document,
-  //   IconMenu,
-  //   Setting,
-  // },
+  components: {
+    // Location,
+    // Document,
+    // IconMenu,
+    // Setting,
+    Menu,
+  },
   methods: {
+    onClickCollapse() {
+      this.sideBarModel.isCollapse = !this.sideBarModel.isCollapse;
+    },
     handleOpen(key: string, keyPath: string[]) {
       console.log(key, keyPath);
     },
@@ -91,8 +150,8 @@ export default defineComponent({
 </script>
 
 <style>
-.el-menu-vertical-demo:not(.el-menu--collapse) {
+/* .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
   min-height: 400px;
-}
+} */
 </style>

@@ -4,7 +4,7 @@
  * @Autor: wushiyang
  * @Date: 2022-02-08 09:54:25
  * @LastEditors: wushiyang
- * @LastEditTime: 2022-02-08 17:47:04
+ * @LastEditTime: 2022-02-09 09:27:54
 -->
 <template>
   <MenuContainer>
@@ -13,7 +13,12 @@
 </template>
 
 <script lang="ts" setup>
+import { useRoute } from 'vue-router';
 import MenuContainer from '@/components/ui/MenuContainer.vue';
+import { routes } from '@/router/index';
+
+const currentRoute = useRoute();
+console.log(currentRoute);
 </script>
 
 <style lang="scss">
