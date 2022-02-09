@@ -4,10 +4,12 @@
  * @Autor: wushiyang
  * @Date: 2022-02-08 09:54:25
  * @LastEditors: wushiyang
- * @LastEditTime: 2022-02-09 15:43:15
+ * @LastEditTime: 2022-02-09 18:13:57
  */
+/* eslint-disable-next-line */
+/// <reference path="../extension/router.d.ts"/>
 import { ElIcon } from 'element-plus';
-// import { HomeFilled as IconHomeFilled, Menu as IconMenu } from '@element-plus/icons-vue';
+import { HomeFilled as IconHomeFilled, Menu as IconMenu } from '@element-plus/icons-vue';
 import { h } from 'vue';
 import {
   createRouter, createWebHistory, RouteRecordRaw, RouterView,
@@ -18,7 +20,7 @@ export const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: '/',
     isInMenu: true,
-    // menuIcon: h(ElIcon, IconHomeFilled),
+    menuIcon: h(ElIcon, IconHomeFilled),
     menuTitle: '首页',
     component: () => import(/* webpackChunkName: "about" */ '@/views/Home.vue'),
   },

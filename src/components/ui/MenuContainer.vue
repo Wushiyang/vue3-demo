@@ -4,7 +4,7 @@
  * @Autor: wushiyang
  * @Date: 2022-02-08 17:08:18
  * @LastEditors: wushiyang
- * @LastEditTime: 2022-02-09 17:52:56
+ * @LastEditTime: 2022-02-09 18:13:34
 -->
 <template>
   <el-container class="menu-container-container">
@@ -26,12 +26,12 @@
 /// <reference
 // path="../../extension/router.d.ts"/>
 import {
-  defineComponent, reactive, h, PropType, VNode, DefineComponent,
+  defineComponent, reactive, h, PropType, VNode,
 } from 'vue';
 // import { buildSlots } from '@vue/compiler-core';
 import { ElMenu, ElMenuItem, ElSubMenu } from 'element-plus';
 import { RouteRecordRaw } from 'vue-router';
-import { BuildPropReturn, PropWrapper } from '_element-plus@2.0.1@element-plus/es/utils/props';
+// import { BuildPropReturn, PropWrapper } from '_element-plus@2.0.1@element-plus/es/utils/props';
 import { routes } from '@/router';
 
 type RouteRecordWithChildrenRaw = {
@@ -61,22 +61,8 @@ const Menu = defineComponent({
         return h(
           ElMenuItem,
           {
-            index: menuItem.name as unknown as BuildPropReturn<
-              PropWrapper<string | null>,
-              null,
-              unknown,
-              unknown,
-              unknown
-            >,
+            index: menuItem.name as string,
           },
-          // {
-          //   index: menuItem.name as string | null,
-          //   // backgroundColor: '#000000',
-          //   // router: true,
-          // },
-          // h('div', {
-          //   $slots
-          // }, menuItem.menuTitle)
           [menuItem.menuIcon, menuItem.menuTitle],
         );
       }
