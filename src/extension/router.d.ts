@@ -4,15 +4,15 @@
  * @Autor: wushiyang
  * @Date: 2022-02-09 08:07:36
  * @LastEditors: wushiyang
- * @LastEditTime: 2022-02-09 18:12:53
+ * @LastEditTime: 2022-02-11 10:46:47
  */
-import { VNode } from 'vue';
-import { _RouteRecordBase } from 'vue-router';
+import { DefineComponent, VNode } from 'vue';
+import { RouteMeta } from 'vue-router';
 
 declare module 'vue-router' {
-  interface _RouteRecordBase {
+  interface RouteMeta {
     isInMenu?: boolean;
-    menuTitle?: string | VNode;
-    menuIcon?: string | VNode;
+    menuIcon?: string;
+    menuTitle?: string;
   }
 }

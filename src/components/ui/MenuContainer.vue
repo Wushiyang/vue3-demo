@@ -4,7 +4,7 @@
  * @Autor: wushiyang
  * @Date: 2022-02-08 17:08:18
  * @LastEditors: wushiyang
- * @LastEditTime: 2022-02-09 18:13:34
+ * @LastEditTime: 2022-02-11 10:43:41
 -->
 <template>
   <el-container class="menu-container-container">
@@ -13,7 +13,7 @@
       <Menu :menuList="menuList" :collapse="sideBarModel.isCollapse"></Menu>
     </el-aside>
     <el-container>
-      <el-header style="height: 56px; background: #000000">头部</el-header>
+      <el-header style="height: 56px; background: #000000">头部{{ num }}</el-header>
       <el-main>
         <slot></slot>
       </el-main>
@@ -22,16 +22,14 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable-next-line */
-/// <reference
-// path="../../extension/router.d.ts"/>
 import {
-  defineComponent, reactive, h, PropType, VNode,
+  defineComponent, reactive, h, PropType, VNode, DefineComponent
 } from 'vue';
-// import { buildSlots } from '@vue/compiler-core';
-import { ElMenu, ElMenuItem, ElSubMenu } from 'element-plus';
+import {
+  ElMenu, ElMenuItem, ElSubMenu, ElIcon
+} from 'element-plus';
+import * as ElementPlusIcon from '@element-plus/icons-vue';
 import { RouteRecordRaw } from 'vue-router';
-// import { BuildPropReturn, PropWrapper } from '_element-plus@2.0.1@element-plus/es/utils/props';
 import { routes } from '@/router';
 
 type RouteRecordWithChildrenRaw = {
@@ -42,28 +40,43 @@ const Menu = defineComponent({
   props: {
     menuList: {
       type: Array as PropType<RouteRecordRaw[]>,
-      required: true,
+      required: true
     },
     collapse: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   setup(props) {
     const vnodes: VNode[] = [];
 
     function createMenuItem(menuItem: RouteRecordRaw): VNode | undefined {
-      if (menuItem.isInMenu && menuItem.name) {
+      if (menuItem.meta?.isInMenu && menuItem.name) {
         if (menuItem.children) {
           /* eslint-disable-next-line */
           return createSubMenu(menuItem as RouteRecordWithChildrenRaw);
         }
+
+        const slots: Record<string, unknown> = {
+          title: () => h('span', menuItem.meta?.menuTitle)
+        };
+        const icon = menuItem.meta?.menuIcon;
+        if (icon) {
+          slots.default = () => h(
+            ElIcon,
+            { color: '#409EFC' },
+            {
+              default: () => h((ElementPlusIcon as unknown as Record<string, DefineComponent>)[icon])
+            }
+          );
+        }
+
         return h(
           ElMenuItem,
           {
-            index: menuItem.name as string,
+            index: menuItem.name as string
           },
-          [menuItem.menuIcon, menuItem.menuTitle],
+          slots
         );
       }
       return undefined;
@@ -71,7 +84,7 @@ const Menu = defineComponent({
 
     function createSubMenu(menuItem: RouteRecordWithChildrenRaw): VNode {
       const len = menuItem.children.length;
-      const vns = [];
+      const vns: VNode[] = [];
       for (let i = 0; i < len; i += 1) {
         const node = createMenuItem(menuItem.children[i]);
         if (node) {
@@ -81,9 +94,27 @@ const Menu = defineComponent({
       return h(
         ElSubMenu,
         {
-          index: menuItem.name as string,
+          index: menuItem.name as string
         },
-        vns,
+        {
+          default: () => vns,
+          title: () => {
+            const icon = menuItem.meta?.menuIcon;
+            const slot = [h('span', menuItem.meta?.menuTitle)];
+            if (icon) {
+              slot.unshift(
+                h(
+                  ElIcon,
+                  { color: '#409EFC' },
+                  {
+                    default: () => h((ElementPlusIcon as unknown as Record<string, DefineComponent>)[icon])
+                  }
+                )
+              );
+            }
+            return slot;
+          }
+        }
       );
     }
 
@@ -97,21 +128,31 @@ const Menu = defineComponent({
       ElMenu,
       {
         collapse: props.collapse,
+        router: true
+        // backgroundColor: '#333333',
       },
-      vnodes,
+      {
+        default: () => vnodes
+      }
     );
-  },
+  }
 });
 
 export default defineComponent({
-  setup() {
+  props: {
+    num: {
+      type: Number,
+      default: 0
+    }
+  },
+  setup(prop) {
     const sideBarModel = reactive({
       active: '/',
-      isCollapse: true,
+      isCollapse: true
     });
     return {
       sideBarModel,
-      menuList: routes,
+      menuList: routes
     };
   },
   components: {
@@ -119,9 +160,12 @@ export default defineComponent({
     // Document,
     // IconMenu,
     // Setting,
-    Menu,
+    Menu
   },
   methods: {
+    // handleClick() {
+    //   this.$emit('update', this.$props.num + 1);
+    // },
     onClickCollapse() {
       this.sideBarModel.isCollapse = !this.sideBarModel.isCollapse;
     },
@@ -130,8 +174,8 @@ export default defineComponent({
     },
     handleClose(key: string, keyPath: string[]) {
       console.log(key, keyPath);
-    },
-  },
+    }
+  }
 });
 </script>
 

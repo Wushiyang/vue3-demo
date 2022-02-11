@@ -4,7 +4,7 @@
  * @Autor: wushiyang
  * @Date: 2022-02-08 09:54:25
  * @LastEditors: wushiyang
- * @LastEditTime: 2022-02-08 17:18:51
+ * @LastEditTime: 2022-02-10 10:23:58
  */
 import { createApp } from 'vue';
 import ElementPlus from 'element-plus';
@@ -12,6 +12,10 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 import 'element-plus/dist/index.css';
+// import * as ElementPlusIcon from '@element-plus/icons-vue';
 
-createApp(App).use(store).use(router).use(ElementPlus)
-  .mount('#app');
+const app = createApp(App).use(store).use(router).use(ElementPlus);
+// for(const name in ElementPlusIcon) {
+//   app.component(name, [ElementPlusIcon as any][name]);
+// }
+app.mount('#app');
