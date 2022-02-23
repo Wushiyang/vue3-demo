@@ -4,16 +4,21 @@
  * @Autor: wushiyang
  * @Date: 2022-02-08 17:08:18
  * @LastEditors: wushiyang
- * @LastEditTime: 2022-02-11 10:43:41
+ * @LastEditTime: 2022-02-23 18:00:56
 -->
 <template>
   <el-container class="menu-container-container">
-    <el-aside style="background: #000000; width: auto">
-      <div style="height: 56px; cursor: pointer" @click="onClickCollapse">Collapse</div>
-      <Menu :menuList="menuList" :collapse="sideBarModel.isCollapse"></Menu>
+    <el-aside class="aside">
+      <div class="tac c-white logo" :class="{ 'logo-expand': !sideBarModel.isCollapse }" @click="onClickCollapse">
+        <span v-show="!sideBarModel.isCollapse">vue3-demo</span>
+        <span v-show="sideBarModel.isCollapse">WYY</span>
+      </div>
+      <div class="menu-wrap">
+        <Menu class="menu" :current="currentMenuItem" :menuList="menuList" :collapse="sideBarModel.isCollapse"></Menu>
+      </div>
     </el-aside>
     <el-container>
-      <el-header style="height: 56px; background: #000000">头部{{ num }}</el-header>
+      <el-header class="header">头部{{ num }}</el-header>
       <el-main>
         <slot></slot>
       </el-main>
@@ -29,7 +34,7 @@ import {
   ElMenu, ElMenuItem, ElSubMenu, ElIcon
 } from 'element-plus';
 import * as ElementPlusIcon from '@element-plus/icons-vue';
-import { RouteRecordRaw } from 'vue-router';
+import { RouteRecordRaw, useRoute } from 'vue-router';
 import { routes } from '@/router';
 
 type RouteRecordWithChildrenRaw = {
@@ -45,6 +50,10 @@ const Menu = defineComponent({
     collapse: {
       type: Boolean,
       default: false
+    },
+    current: {
+      type: String,
+      default: ''
     }
   },
   setup(props) {
@@ -128,8 +137,11 @@ const Menu = defineComponent({
       ElMenu,
       {
         collapse: props.collapse,
-        router: true
-        // backgroundColor: '#333333',
+        router: true,
+        backgroundColor: '#545c64',
+        textColor: '#ffffff',
+        activeTextColor: '#ffd04b',
+        defaultActive: props.current
       },
       {
         default: () => vnodes
@@ -145,27 +157,23 @@ export default defineComponent({
       default: 0
     }
   },
-  setup(prop) {
+  setup() {
     const sideBarModel = reactive({
       active: '/',
       isCollapse: true
     });
+    const route = useRoute();
+    const currentMenuItem = route.name as string;
     return {
       sideBarModel,
-      menuList: routes
+      menuList: routes,
+      currentMenuItem
     };
   },
   components: {
-    // Location,
-    // Document,
-    // IconMenu,
-    // Setting,
     Menu
   },
   methods: {
-    // handleClick() {
-    //   this.$emit('update', this.$props.num + 1);
-    // },
     onClickCollapse() {
       this.sideBarModel.isCollapse = !this.sideBarModel.isCollapse;
     },
@@ -179,9 +187,45 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style lang="scss" scoped>
 /* .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
   min-height: 400px;
 } */
+// 选中的菜单也标注黄色
+:v-deep(.el-menu) {
+  border: none !important;
+  .el-sub-menu {
+    &.is-active {
+      .el-sub-menu__title {
+        color: #ffd04b !important;
+      }
+    }
+  }
+}
+.menu-container-container {
+  height: 100vh;
+  .aside {
+    width: auto;
+    background: #545c64;
+    .logo {
+      width: 64px;
+      line-height: 56px;
+      cursor: pointer;
+      transition: width 0.1s;
+    }
+    .logo-expand {
+      width: 200px;
+    }
+    .menu-wrap {
+      width: auto;
+      background: #ffffff;
+    }
+  }
+  .header {
+    width: auto;
+    background: #545c64;
+    height: 56px;
+  }
+}
 </style>

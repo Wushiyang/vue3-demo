@@ -4,7 +4,7 @@
  * @Autor: wushiyang
  * @Date: 2022-02-08 09:54:25
  * @LastEditors: wushiyang
- * @LastEditTime: 2022-02-10 11:31:45
+ * @LastEditTime: 2022-02-23 18:00:22
  */
 module.exports = {
   root: true,
@@ -23,7 +23,8 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'comma-dangle': ['error', 'never'],
-    'max-len': ['error', { code: 300 }]
+    'max-len': ['error', { code: 300 }],
+    '@typescript-eslint/explicit-module-boundary-types': 'off'
   },
   overrides: [
     {
